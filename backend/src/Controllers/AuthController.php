@@ -65,7 +65,13 @@ class AuthController
 
     public static function me(array $params): void
     {
-        Response::json(Auth::require());
+        $u = Auth::require();
+        $cycle = (string) \App\SiteSettings::get('autofill_reset_cycle');
+        $u['wordbook_limit'] = \App\Limits::wordbookLimit($u);
+        $u['wordbook_count'] = \App\Limits::wordbookCount((int) $u['id']);
+        $u['autofill_limit'] = \App\Limits::autofillLimit($u);
+        $u['autofill_used'] = \App\Usage::count((int) $u['id'], 'autofill', $cycle);
+        Response::json($u);
     }
 
     private static function respondWithUser(int $userId): void

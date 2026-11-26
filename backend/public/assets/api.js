@@ -90,7 +90,29 @@ export const api = {
   marketUse(id) { return request(`/market/${id}/use`, { method: 'POST' }); },
   marketReport(id, reason) { return request(`/market/${id}/report`, { method: 'POST', body: { reason } }); },
 
+  // 首页 / 公开配置
+  home() { return request('/home'); },
+  publicSettings() { return request('/settings/public'); },
+
+  // 邮箱验证码
+  sendEmailCode(email) { return request('/auth/send-email-code', { method: 'POST', body: { email } }); },
+  verifyEmailCode(email, code) { return request('/auth/verify-email-code', { method: 'POST', body: { email, code } }); },
+
   // 管理
   adminReports() { return request('/admin/reports'); },
   adminHandle(id, action) { return request(`/admin/reports/${id}/handle`, { method: 'POST', body: { action } }); },
+  adminUsers(params) { return request('/admin/users' + qs(params)); },
+  adminUpdateUser(id, data) { return request(`/admin/users/${id}`, { method: 'PUT', body: data }); },
+  adminSettings() { return request('/admin/settings'); },
+  adminSaveSettings(settings) { return request('/admin/settings', { method: 'PUT', body: settings }); },
+  adminAnnouncements() { return request('/admin/announcements'); },
+  adminCreateAnnouncement(data) { return request('/admin/announcements', { method: 'POST', body: data }); },
+  adminUpdateAnnouncement(id, data) { return request(`/admin/announcements/${id}`, { method: 'PUT', body: data }); },
+  adminDeleteAnnouncement(id) { return request(`/admin/announcements/${id}`, { method: 'DELETE' }); },
+  adminDonations() { return request('/admin/donations'); },
+  adminCreateDonation(data) { return request('/admin/donations', { method: 'POST', body: data }); },
+  adminUpdateDonation(id, data) { return request(`/admin/donations/${id}`, { method: 'PUT', body: data }); },
+  adminDeleteDonation(id) { return request(`/admin/donations/${id}`, { method: 'DELETE' }); },
+  adminUpload(image) { return request('/admin/upload', { method: 'POST', body: { image } }); },
+  adminEmailTest(email) { return request('/admin/email/test', { method: 'POST', body: { email } }); },
 };

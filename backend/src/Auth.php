@@ -20,7 +20,9 @@ class Auth
             Response::error('未登录', 401, 401);
         }
         $stmt = Database::pdo()->prepare(
-            'SELECT u.id, u.username, u.role, u.created_at
+            'SELECT u.id, u.username, u.email, u.email_verified, u.role,
+                    u.wordbook_limit_override, u.autofill_limit_override, u.created_at,
+                    t.id AS token_id, t.last_activity
              FROM auth_tokens t JOIN users u ON u.id = t.user_id
              WHERE t.token = ? AND t.expires_at > NOW()'
         );
@@ -29,6 +31,23 @@ class Auth
         if (!$u) {
             Response::error('登录已失效，请重新登录', 401, 401);
         }
+
+        // 空闲超时自动退出
+        $idleMin = (int) SiteSettings::get('session_idle_timeout_minutes');
+        if ($idleMin > 0 && !empty($u['last_activity'])) {
+            $last = strtotime((string) $u['last_activity']);
+            if ($last !== false && time() - $last > $idleMin * 60) {
+                Database::pdo()->prepare('DELETE FROM auth_tokens WHERE id = ?')->execute([$u['token_id']]);
+                Response::error('长时间未操作，请重新登录', 401, 401);
+            }
+        }
+        // 限流刷新 last_activity（最多每 30 秒写一次）
+        $lastTs = !empty($u['last_activity']) ? strtotime((string) $u['last_activity']) : 0;
+        if ($lastTs === false || time() - $lastTs >= 30) {
+            Database::pdo()->prepare('UPDATE auth_tokens SET last_activity = NOW() WHERE id = ?')->execute([$u['token_id']]);
+        }
+
+        unset($u['token_id'], $u['last_activity']);
         self::$user = $u;
         return $u;
     }
