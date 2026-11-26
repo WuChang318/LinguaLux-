@@ -74,6 +74,7 @@ class MarketController
     public static function use(array $params): void
     {
         $user = Auth::require();
+        \App\Limits::assertCanCreateWordbook($user);
         $id = (int) $params['id'];
         $pdo = Database::pdo();
 

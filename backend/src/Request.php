@@ -77,4 +77,19 @@ class Request
         }
         return $body[$key] ?? $default;
     }
+
+    public static function bool($key, $default = false)
+    {
+        $v = self::input($key, $default);
+        if (is_bool($v)) {
+            return $v;
+        }
+        if (is_int($v) || is_float($v)) {
+            return $v != 0;
+        }
+        if (is_string($v)) {
+            return in_array(strtolower($v), ['1', 'true', 'on', 'yes'], true);
+        }
+        return (bool) $v;
+    }
 }

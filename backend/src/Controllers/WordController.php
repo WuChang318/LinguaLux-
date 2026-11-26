@@ -88,7 +88,9 @@ class WordController
     /** 一键填充：用 DeepSeek 批量补齐单词信息（默认只补缺失中文释义的单词） */
     public static function autofill(array $params): void
     {
+        $user = Auth::require();
         $wb = WordbookController::ownWordbook($params['id']);
+        \App\Limits::assertCanAutofill($user);
         if (!\App\DeepSeekService::isEnabled()) {
             Response::error('未配置 DeepSeek API Key，请先在 config/.env 中填写 DEEPSEEK_API_KEY', 400);
         }
@@ -119,6 +121,7 @@ class WordController
         if (empty($words)) {
             Response::json(['filled' => 0, 'total' => 0, 'failed' => 0, 'message' => '没有需要填充的单词']);
         }
+        \App\Limits::recordAutofill($user);
 
         $total = count($words);
         $filled = 0;

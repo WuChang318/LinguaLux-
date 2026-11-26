@@ -25,6 +25,7 @@ class WordbookController
     public static function create(array $params): void
     {
         $user = Auth::require();
+        \App\Limits::assertCanCreateWordbook($user);
         $name = trim((string) Request::input('name', ''));
         $description = trim((string) Request::input('description', ''));
         if ($name === '') {
