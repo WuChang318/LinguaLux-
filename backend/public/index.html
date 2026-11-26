@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LinguaLux · 单词学习</title>
+  <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+  <header id="topbar" class="topbar" hidden></header>
+  <main id="app" class="app"></main>
+  <footer class="footer">
+    <div class="footer-inner">© <span id="footer-year">2026</span> LinguaLux · 版权所有</div>
+  </footer>
+  <div id="toast-root" class="toast-root"></div>
+  <div id="modal-root" class="modal-root"></div>
+  <script>document.getElementById('footer-year').textContent = new Date().getFullYear();</script>
+  <script type="module" src="/assets/app.js"></script>
+</body>
+</html>
